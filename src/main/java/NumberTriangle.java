@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This is the provided NumberTriangle class to be used in this coding task.
@@ -133,28 +135,43 @@ public class NumberTriangle {
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
 
-        // TODO define any variables that you want to use to store things
+        List<List<NumberTriangle>> rows = new ArrayList<>();
+        String line;
 
         // will need to return the top of the NumberTriangle,
         // so might want a variable for that.
-        NumberTriangle top = null;
 
-        String line = br.readLine();
-        while (line != null) {
+        while ((line = br.readLine()) != null) {
+            line = line.trim();
+            if (line.isEmpty()) continue; // skip blank lines if any
+            String[] tokens = line.split("\\s+");
+            List<NumberTriangle> row = new ArrayList<>();
+            for (String t : tokens) {
+                row.add(new NumberTriangle(Integer.parseInt(t)));
+            }
+            rows.add(row);
 
-            // remove when done; this line is included so running starter code prints the contents of the file
-            System.out.println(line);
-
-            // TODO process the line
-
-            //read the next line
-            line = br.readLine();
         }
         br.close();
-        return top;
+        if (rows.isEmpty()) {
+            throw new IOException("Empty triangle file: " + fname);
+        }
+
+        // Link each node in row i to nodes in row i+1
+        for (int i = 0; i < rows.size() - 1; i++) {
+            List<NumberTriangle> cur = rows.get(i);
+            List<NumberTriangle> next = rows.get(i + 1);
+            for (int j = 0; j < cur.size(); j++) {
+                cur.get(j).setLeft(next.get(j));
+                cur.get(j).setRight(next.get(j + 1));
+            }
+        }
+
+        // top of the triangle
+        return rows.get(0).get(0);
     }
 
-    public static void main(s[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
         NumberTriangle mt = NumberTriangle.loadTriangle("input_tree.txt");
 
