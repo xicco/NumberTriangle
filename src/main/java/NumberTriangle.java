@@ -88,8 +88,28 @@ public class NumberTriangle {
      *
      */
     public int retrieve(String path) {
-        // TODO implement this method
-        return -1;
+        NumberTriangle cur = this;
+        if (path == null || path.length() == 0) {
+            return cur.getRoot();
+        }
+
+        for (int i = 0; i < path.length(); i++) {
+            char c = path.charAt(i);
+            if (c == 'l') {
+                if (cur.left == null) {
+                    throw new IllegalArgumentException("Invalid path: reached null 'left' when following path at index " + i);
+                }
+                cur = cur.left;
+            } else if (c == 'r') {
+                if (cur.right == null) {
+                    throw new IllegalArgumentException("Invalid path: reached null 'right' when following path at index " + i);
+                }
+                cur = cur.right;
+            } else {
+                throw new IllegalArgumentException("Invalid path character: " + c + ". Only 'l' and 'r' allowed.");
+            }
+        }
+        return cur.getRoot();
     }
 
     /** Read in the NumberTriangle structure from a file.
@@ -107,6 +127,9 @@ public class NumberTriangle {
         // open the file and get a BufferedReader object whose methods
         // are more convenient to work with when reading the file contents.
         InputStream inputStream = NumberTriangle.class.getClassLoader().getResourceAsStream(fname);
+        if (inputStream == null) {
+            throw new FileNotFoundException("Resource not found on classpath: " + fname);
+        }
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
 
@@ -131,7 +154,7 @@ public class NumberTriangle {
         return top;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(s[] args) throws IOException {
 
         NumberTriangle mt = NumberTriangle.loadTriangle("input_tree.txt");
 
